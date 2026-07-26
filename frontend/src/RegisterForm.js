@@ -12,6 +12,7 @@ function RegisterForm() {
     const [formData, setFormData] = useState({
         name: '',
         age: '',
+        email: '',
         gender: '',
         hobbies: [],
         mobile: '',
@@ -105,7 +106,18 @@ function RegisterForm() {
                                 required
                             />
                         </label>
-
+                        <label className="field field-wide">
+                            <span>Email</span>
+                            <input
+                                type="email"
+                                name="email"
+                                value={formData.email}
+                                onChange={updateField}
+                                placeholder="e.g. jordan.lee@example.com"
+                                autoComplete="email"
+                                required
+                            />
+                        </label>
                         <label className="field">
                             <span>Age</span>
                             <input
