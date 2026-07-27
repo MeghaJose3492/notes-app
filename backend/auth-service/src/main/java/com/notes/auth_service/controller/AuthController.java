@@ -1,5 +1,6 @@
 package com.notes.auth_service.controller;
 
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,4 +31,14 @@ public class AuthController {
 		System.out.println("Inside Login Controller");
 	    return authService.login(request);
 	}
+	@GetMapping("/test")
+    public String test(){
+        return "You are authenticated";
+    }
+
 }
+
+//{
+//    "email":"izel.joseph@example.com",
+//    "password":"Password@123"
+//}
