@@ -1,18 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from "motion/react";
+import Api from './Api';
 function Login() {
     const[user, setUser] = useState({
         username: '',
         password: ''
     });
     const navigate = useNavigate();
-  function submitLogin(event) {
-  event.preventDefault();
-  if (user.username === 'admin' && user.password === 'password') {
-    navigate('/home');
-  }
-}
+// login function to handle form submission and API call
+const submitLogin = async (event) => {
+    event.preventDefault();
+    try {
+        const response = await Api.post("/auth/login", {
+            email: user.username,
+            password: user.password
+        });
+        localStorage.setItem("token", response.data.token);
+        navigate("/home");
+    } catch (error) {
+      console.log(error);
+    console.log(error.response);
+
+    if (error.response) {
+        console.log(error.response.data);
+        console.log(error.response.status);
+    }
+        alert("Invalid email or password.");
+        console.error(error);
+    }
+};
+
   return (
     <div className="login-page">
       <main className="register-page login-layout">
