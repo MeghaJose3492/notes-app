@@ -1,4 +1,4 @@
-package com.notes.auth_service.security;
+package com.notes_app.notes_service.security;
 
 import java.security.Key;
 import java.util.Date;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-
 @Service
 public class JwtService {
 	@Value("${jwt.secret}")

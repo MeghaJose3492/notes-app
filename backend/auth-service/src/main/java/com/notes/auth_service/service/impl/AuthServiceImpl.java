@@ -62,7 +62,10 @@ public class AuthServiceImpl implements AuthService {
 
 		    System.out.println("Step 3: Generating JWT");
 
-		    String token = jwtService.generateToken(user.getEmail());
+		    String token = jwtService.generateToken(
+		            user.getEmail(),
+		            user.getId()
+		    );
 
 		    System.out.println("Step 4: Token Generated");
 
