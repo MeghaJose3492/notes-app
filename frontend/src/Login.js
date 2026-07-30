@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from "motion/react";
-import Api from './Api';
+import Api from './services/Api';
 function Login() {
     const[user, setUser] = useState({
         username: '',
@@ -17,7 +17,7 @@ const submitLogin = async (event) => {
             password: user.password
         });
         localStorage.setItem("token", response.data.token);
-        navigate("/home");
+        navigate("/dashboard  ");
     } catch (error) {
       console.log(error);
     console.log(error.response);

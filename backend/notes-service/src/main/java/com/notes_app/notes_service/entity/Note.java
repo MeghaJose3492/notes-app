@@ -1,8 +1,10 @@
 package com.notes_app.notes_service.entity;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,9 +28,10 @@ public class Note {
 
     private String color;
 
-    private String tags;
+    @ElementCollection
+    private List<String> tags;
 
-
+    private boolean pinned;
     private boolean starred = false;
 
 
@@ -37,5 +40,5 @@ public class Note {
     private LocalDateTime updatedAt;
 
 
-    private Long userId;
+    private String email;
 }

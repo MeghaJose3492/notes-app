@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Nav from './Nav';
-import { getNotes, saveNotes } from './noteData';
+import Api from "./services/NotesApi";
 
 const noteColors = [
   { name: 'Sage', value: '#d6e1b6' },
@@ -16,7 +16,7 @@ function Home() {
   const [color, setColor] = useState(noteColors[0].value);
   const [tagInput, setTagInput] = useState('');
   const [tags, setTags] = useState([]);
-  const [savedNotes, setSavedNotes] = useState(() => getNotes());
+  const [savedNotes, setSavedNotes] = useState([]);
 
   function addTag(event) {
     if (event.key !== 'Enter') return;
@@ -31,31 +31,41 @@ function Home() {
   function removeTag(tagToRemove) {
     setTags(tags.filter((tag) => tag !== tagToRemove));
   }
-
-  function saveNote(event) {
+// fetch the notes
+const fetchNotes = async () => {
+    try {
+        const response = await Api.get("/notes");
+        setSavedNotes(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+};
+useEffect(() => {
+    fetchNotes();
+}, []);
+//save all the notes
+  const saveNote = async (event) => {
     event.preventDefault();
     if (!title.trim() || !content.trim()) return;
+    try {
+        await Api.post("/notes", {
+            title: title.trim(),
+            content: content.trim(),
+            color,
+            tags
+        });
+        await fetchNotes();
+        setTitle("");
+        setContent("");
+        setColor(noteColors[0].value);
+        setTags([]);
+        setTagInput("");
+    } catch (error) {
+        console.error(error);
+        alert("Unable to save note.");
+    }
+  };
 
-    const nextNotes = [
-      {
-        id: Date.now(),
-        title: title.trim(),
-        content: content.trim(),
-        color,
-        tags,
-        pinned: false,
-        updated: 'Just now',
-      },
-      ...savedNotes,
-    ];
-    setSavedNotes(nextNotes);
-    saveNotes(nextNotes);
-    setTitle('');
-    setContent('');
-    setColor(noteColors[0].value);
-    setTags([]);
-    setTagInput('');
-  }
 
   return (
     <div className="notes-page">

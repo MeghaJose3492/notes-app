@@ -1,49 +1,7 @@
-import { useMemo, useState } from 'react';
+import Api from './services/NotesApi';
 import { Link } from 'react-router-dom';
 import Nav from './Nav';
-
-const notes = [
-	{
-		id: 1,
-		title: 'Ideas for the next project',
-		excerpt: 'A few directions worth exploring before the next planning session.',
-		updated: 'Today, 9:42 AM',
-		category: 'Ideas',
-		pinned: true,
-	},
-	{
-		id: 2,
-		title: 'Reading list',
-		excerpt: 'Books, essays, and references to come back to when there is time.',
-		updated: 'Yesterday, 4:18 PM',
-		category: 'Personal',
-		pinned: false,
-	},
-	{
-		id: 3,
-		title: 'Weekly planning notes',
-		excerpt: 'Priorities, loose ends, and the small wins from this week.',
-		updated: 'Jun 18, 2024',
-		category: 'Planning',
-		pinned: true,
-	},
-	{
-		id: 4,
-		title: 'Grocery list',
-		excerpt: 'Fresh fruit, coffee, and the ingredients for Sunday dinner.',
-		updated: 'Jun 16, 2024',
-		category: 'Personal',
-		pinned: false,
-	},
-	{
-		id: 5,
-		title: 'Things to learn',
-		excerpt: 'Topics and skills to explore over the next few months.',
-		updated: 'Jun 12, 2024',
-		category: 'Ideas',
-		pinned: false,
-	},
-];
+import { useMemo, useState, useEffect } from 'react';
 
 function NoteItem({ note }) {
 	return (
@@ -62,19 +20,37 @@ function NoteItem({ note }) {
 }
 
 function Dashboard() {
+	const [notes, setNotes] = useState([]);
+	const [loading, setLoading] = useState(true);
 	const [query, setQuery] = useState('');
+		useEffect(() => {
+    const fetchNotes = async () => {
+        try {
+            const response = await Api.get("/notes");
+            setNotes(response.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    fetchNotes();
+}, []);
 	const filteredNotes = useMemo(() => {
 		const normalizedQuery = query.trim().toLowerCase();
-		if (!normalizedQuery) return notes;
+		if (!normalizedQuery) 
+			return notes;
 
 		return notes.filter((note) =>
 			`${note.title} ${note.excerpt} ${note.category}`.toLowerCase().includes(normalizedQuery),
 		);
-	}, [query]);
+	}, [query, notes]);
 
 	const recentNotes = filteredNotes.slice(0, 3);
-	const pinnedNotes = filteredNotes.filter((note) => note.pinned);
-
+	const pinnedNotes = filteredNotes.filter((note) => note.starred);
+	if (loading) {
+    	return <h2>Loading dashboard...</h2>;
+	}
 	return (
 		<div className="dashboard-page">
 			<Nav />

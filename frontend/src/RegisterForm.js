@@ -1,9 +1,15 @@
 import { useState } from 'react';
 import { motion } from "motion/react";
 import {useNavigate} from 'react-router-dom';
+import api from './services/Api';
 
 const hobbyOptions = ['Reading', 'Music', 'Travel', 'Sports', 'Photography', 'Cooking'];
-
+const genderOptions = [
+    { label: "Female", value: "FEMALE" },
+    { label: "Male", value: "MALE" },
+    { label: "Non-binary", value: "NON_BINARY" },
+    { label: "Prefer not to say", value: "PREFER_NOT_TO_SAY" }
+];
 function RegisterForm() {
     let navigate = useNavigate();
     const goToLogin = () => {
@@ -13,6 +19,7 @@ function RegisterForm() {
         name: '',
         age: '',
         email: '',
+        password: '',
         gender: '',
         hobbies: [],
         mobile: '',
@@ -42,11 +49,29 @@ function RegisterForm() {
         }));
     };
 
-    const submitUser = (event) => {
+    const submitUser = async (event) => {   
         event.preventDefault();
-
-        if (event.currentTarget.checkValidity()) {
+        if (!event.currentTarget.checkValidity()) {
+            return;
+        }
+        try {
+            await api.post("/auth/register", {
+                fullName: formData.name,
+                age: Number(formData.age),
+                email: formData.email,
+                password: formData.password,
+                mobile: formData.mobile,
+                gender: formData.gender,
+                interests: formData.hobbies
+            });
             setSubmitted(true);
+            setTimeout(() => {
+                navigate("/login");
+            }, 1500);
+
+        } catch (error) {
+            console.error(error);
+            alert("Registration failed.");
         }
     };
 
@@ -145,25 +170,37 @@ function RegisterForm() {
                                 required
                             />
                         </label>
+                        <label className="field field-wide">
+    <span>Password</span>
+    <input
+        type="password"
+        name="password"
+        value={formData.password}
+        onChange={updateField}
+        placeholder="Create a password"
+        autoComplete="new-password"
+        required
+    />
+</label>
                     </div>
 
                     <fieldset>
                         <legend>Gender</legend>
                         <div className="choice-row">
-                            {['Female', 'Male', 'Non-binary', 'Prefer not to say'].map((option) => (
-                                <label className="choice" key={option}>
-                                    <input
-                                        type="radio"
-                                        name="gender"
-                                        value={option}
-                                        checked={formData.gender === option}
-                                        onChange={updateField}
-                                        required
-                                    />
-                                    <span>{option}</span>
-                                </label>
-                            ))}
-                        </div>
+                            {genderOptions.map((option) => (
+                                <label className="choice" key={option.value}>
+            <input
+                type="radio"
+                name="gender"
+                value={option.value}
+                checked={formData.gender === option.value}
+                onChange={updateField}
+                required
+            />
+            <span>{option.label}</span>
+        </label>
+    ))}
+</div>
                     </fieldset>
 
                     <fieldset>

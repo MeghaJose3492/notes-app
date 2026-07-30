@@ -9,14 +9,16 @@ import com.notes_app.notes_service.entity.Note;
 
 public interface NoteRepository extends JpaRepository<Note, Long> {
 
-    List<Note> findByUserId(Long userId);
-    List<Note> findByUserIdAndTitleContainingIgnoreCase(
-            Long userId,
+    List<Note> findByEmail(Long userId);
+    List<Note> findByEmailAndTitleContainingIgnoreCase(
+    		String email,
             String title
     );
-    long countByUserId(Long userId);
+    long countByEmail(String email);
+    
+    List<Note> findByEmail(String email);
 
-    long countByUserIdAndStarredTrue(Long userId);
+    long countByEmailAndStarredTrue(String email);
 
-    long countByUserIdAndCreatedAtAfter(Long userId, LocalDateTime date);
+    long countByEmailAndCreatedAtAfter(String email, LocalDateTime date);
 }

@@ -36,8 +36,8 @@ public class NoteController {
 	    	Authentication authentication =
 	    	        SecurityContextHolder.getContext().getAuthentication();
 
-	    	Long userId = (Long) authentication.getDetails();
-	        Note note = noteService.createNote(request, userId);
+	    	String email = authentication.getName();
+	        Note note = noteService.createNote(request, email);
 
 	        return ResponseEntity.ok(note);
 	    }
@@ -51,9 +51,9 @@ public class NoteController {
 	    	Authentication authentication =
 	    	        SecurityContextHolder.getContext().getAuthentication();
 
-	    	Long userId = (Long) authentication.getDetails();
+	    	String email = authentication.getName();
 
-	        List<Note> notes = noteService.getUserNotes(userId);
+	    	List<Note> notes = noteService.getUserNotes(email);
 
 	        return ResponseEntity.ok(notes);
 	    }
@@ -62,14 +62,14 @@ public class NoteController {
 	    public ResponseEntity<Note> updateNote(
 	            @PathVariable Long id,
 	            @RequestBody NoteRequest request) {
-	        Note updatedNote = noteService.updateNote(id, request);
-	        return ResponseEntity.ok(updatedNote);
+	        return ResponseEntity.ok(noteService.updateNote(id, request));
 	    }
+	    
 	    @DeleteMapping("/{id}")
 	    public ResponseEntity<String> deleteNote(
 	            @PathVariable Long id) {
 	        noteService.deleteNote(id);
-	        return ResponseEntity.ok("Note deleted successfully");
+	        return ResponseEntity.noContent().build();
 	    }
 	    
 	    @PatchMapping("/{id}/star")
@@ -85,9 +85,9 @@ public class NoteController {
 	    	Authentication authentication =
 	    	        SecurityContextHolder.getContext().getAuthentication();
 
-	    	Long userId = (Long) authentication.getDetails();
+	    	String email = authentication.getName();
 	        List<Note> notes =
-	                noteService.searchNotes(userId, keyword);
+	                noteService.searchNotes(email, keyword);
 	        return ResponseEntity.ok(notes);
 	    }
 	    
@@ -96,9 +96,9 @@ public class NoteController {
 	    	Authentication authentication =
 	    	        SecurityContextHolder.getContext().getAuthentication();
 
-	    	Long userId = (Long) authentication.getDetails();
+	    	String email = authentication.getName();
 	        return ResponseEntity.ok(
-	                noteService.getDashboard(userId)
+	                noteService.getDashboard(email)
 	        );
 	    }
 }

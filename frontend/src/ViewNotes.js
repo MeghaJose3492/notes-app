@@ -1,7 +1,7 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import Nav from './Nav';
-import { getNotes, saveNotes } from './noteData';
+import Api from "./services/NotesApi";
 
 function NoteCard({ note, onDelete, onEdit, onTogglePin }) {
   return (
@@ -17,11 +17,11 @@ function NoteCard({ note, onDelete, onEdit, onTogglePin }) {
       <div className="note-card-topline">
         <span className="note-card-date">Edited {note.updated}</span>
         <button
-          className={`note-icon-button pin-button ${note.pinned ? 'is-pinned' : ''}`}
+          className={`note-icon-button pin-button ${note.starred ? 'is-pinned' : ''}`}
           type="button"
           onClick={() => onTogglePin(note.id)}
-          aria-label={note.pinned ? `Unpin ${note.title}` : `Pin ${note.title}`}
-          title={note.pinned ? 'Unpin note' : 'Pin note'}
+          aria-label={note.starred ? `Unstar ${note.title}` : `Star ${note.title}`}
+          title={note.starred ? 'Unstar note' : 'Star note'}
         >
           <span aria-hidden="true">&#9733;</span>
         </button>
@@ -72,28 +72,56 @@ function EditNote({ note, onCancel, onSave }) {
 }
 
 function ViewNotes() {
-  const [notes, setNotes] = useState(() => getNotes());
+  const [notes, setNotes] = useState([]);
   const [query, setQuery] = useState('');
   const [editingId, setEditingId] = useState(null);
 
-  function updateNotes(nextNotes) {
-    setNotes(nextNotes);
-    saveNotes(nextNotes);
-  }
 
-  function deleteNote(noteId) {
-    updateNotes(notes.filter((note) => note.id !== noteId));
-    if (editingId === noteId) setEditingId(null);
-  }
+  const fetchNotes = async () => {
+    try {
+        const response = await Api.get("/notes");
+        setNotes(response.data);
+    } catch (error) {
+        console.error(error);
+    }
+  };
 
-  function togglePin(noteId) {
-    updateNotes(notes.map((note) => note.id === noteId ? { ...note, pinned: !note.pinned } : note));
-  }
+useEffect(() => {
+    fetchNotes();
+}, []);
 
-  function updateNote(updatedNote) {
-    updateNotes(notes.map((note) => note.id === updatedNote.id ? updatedNote : note));
-    setEditingId(null);
-  }
+  const deleteNote = async (id) => {
+    try {
+        await Api.delete(`/notes/${id}`);
+        await fetchNotes();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const togglePin = async (id) => {
+    try {
+        await Api.patch(`/notes/${id}/star`);
+        await fetchNotes();
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+  const updateNote = async (updatedNote) => {
+    try {
+        await Api.put(`/notes/${updatedNote.id}`, {
+            title: updatedNote.title,
+            content: updatedNote.content,
+            color: updatedNote.color,
+            tags: updatedNote.tags
+        });
+        await fetchNotes();
+        setEditingId(null);
+    } catch (error) {
+        console.error(error);
+    }
+};
 
   const filteredNotes = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();

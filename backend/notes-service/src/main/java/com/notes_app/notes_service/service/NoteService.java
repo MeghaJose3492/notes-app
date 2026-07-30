@@ -7,12 +7,12 @@ import com.notes_app.notes_service.dto.NoteRequest;
 import com.notes_app.notes_service.entity.Note;
 
 public interface NoteService {
-	Note createNote(NoteRequest request, Long userId);
+	Note createNote(NoteRequest request, String email);
 
-    List<Note> getUserNotes(Long userId);
+    List<Note> getUserNotes(String email);
     Note updateNote(Long id, NoteRequest request);
     void deleteNote(Long id);
     Note toggleStar(Long id);
-    List<Note> searchNotes(Long userId, String keyword);
-    DashboardResponse getDashboard(Long userId);
+    List<Note> searchNotes(String email, String keyword);
+    DashboardResponse getDashboard(String email);
 }

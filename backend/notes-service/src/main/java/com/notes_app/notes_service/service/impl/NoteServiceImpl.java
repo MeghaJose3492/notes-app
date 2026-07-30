@@ -18,14 +18,14 @@ public class NoteServiceImpl implements NoteService {
 	private final NoteRepository noteRepository;
 
 	@Override
-	public Note createNote(NoteRequest request, Long userId) {
+	public Note createNote(NoteRequest request, String email) {
 		Note note = new Note();
 
         note.setTitle(request.getTitle());
         note.setContent(request.getContent());
         note.setColor(request.getColor());
         note.setTags(request.getTags());
-        note.setUserId(userId);
+        note.setEmail(email);
         note.setCreatedAt(LocalDateTime.now());
         note.setUpdatedAt(LocalDateTime.now());
 
@@ -34,28 +34,22 @@ public class NoteServiceImpl implements NoteService {
 	}
 
 	@Override
-	public List<Note> getUserNotes(Long userId) {
+	public List<Note> getUserNotes(String email) {
 		// TODO Auto-generated method stub
-		return noteRepository.findByUserId(userId);
+		return noteRepository.findByEmail(email);
 	}
 	
 	@Override
 	public Note updateNote(Long id, NoteRequest request) {
-
 	    Note note = noteRepository.findById(id)
 	            .orElseThrow(() -> new RuntimeException("Note not found"));
-
-
 	    note.setTitle(request.getTitle());
 	    note.setContent(request.getContent());
 	    note.setColor(request.getColor());
 	    note.setTags(request.getTags());
-
-	    note.setUpdatedAt(LocalDateTime.now());
-
-
 	    return noteRepository.save(note);
 	}
+	
 	@Override
 	public void deleteNote(Long id) {
 
@@ -76,23 +70,23 @@ public class NoteServiceImpl implements NoteService {
 	    return noteRepository.save(note);
 	}
 	@Override
-	public List<Note> searchNotes(Long userId, String keyword) {
+	public List<Note> searchNotes(String email, String keyword) {
 
 	    return noteRepository
-	            .findByUserIdAndTitleContainingIgnoreCase(userId, keyword);
+	            .findByEmailAndTitleContainingIgnoreCase(email, keyword);
 
 	}
 	
 	@Override
-	public DashboardResponse getDashboard(Long userId) {
+	public DashboardResponse getDashboard(String email) {
 
 
 	    long totalNotes =
-	            noteRepository.countByUserId(userId);
+	            noteRepository.countByEmail(email);
 
 
 	    long starredNotes =
-	            noteRepository.countByUserIdAndStarredTrue(userId);
+	            noteRepository.countByEmailAndStarredTrue(email);
 
 
 	    LocalDateTime sevenDaysAgo =
@@ -100,8 +94,8 @@ public class NoteServiceImpl implements NoteService {
 
 
 	    long recentNotes =
-	            noteRepository.countByUserIdAndCreatedAtAfter(
-	                    userId,
+	            noteRepository.countByEmailAndCreatedAtAfter(
+	                    email,
 	                    sevenDaysAgo
 	            );
 

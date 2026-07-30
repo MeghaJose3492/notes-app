@@ -1,5 +1,7 @@
 package com.notes_app.notes_service.dto;
 
+import java.util.List;
+
 import lombok.Data;
 
 @Data
@@ -10,5 +12,5 @@ public class NoteRequest {
 
     private String color;
 
-    private String tags;
+    private List<String> tags;
 }
